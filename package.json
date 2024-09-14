@@ -1,0 +1,23 @@
+{
+  "name": "snacksapi",
+  "version": "1.0.0",
+  "description": "snacks api",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon api/index.js"
+  },
+  "author": "Tiffany Sharpe",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "axios": "^1.7.5",
+    "cors": "^2.8.5",
+    "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
