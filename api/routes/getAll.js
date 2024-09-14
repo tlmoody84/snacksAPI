@@ -1,22 +1,15 @@
-// import our Supabase instance
-const supabase = require("../../supabaseInstance");
+// routes/getAll.js
+const supabase = require('../supabaseInstance');
 
-const cache = {};
-
-const getAll = async (request, response, next) => {
+const getAll = async (req, res, next) => {
   try {
-    if (cache["snacks"]) {
-      console.log("CACHE MONEY!!!");
-      return response.json(cache["snacks"]);
-    }
+    const { data, error } = await supabase
+      .from('snacks')
+      .select('*');
 
-    const res = await supabase.get("/snacks");
+    if (error) throw error;
 
-    // add the response data to our cache
-    cache["snacks"] = res.data;
-
-    console.log("ADDED TO CACHE");
-    response.json(res.data);
+    res.json(data);
   } catch (error) {
     next(error);
   }

@@ -1,17 +1,27 @@
-// import our Supabase instance
-const supabase = require("../../supabaseInstance");
+// Import the Supabase client instance
+const { supabase } = require("../supabaseInstance");
 
 const getById = async (request, response, next) => {
   try {
-    const res = await supabase.get(`/snacks?id=eq.${request.params.id}`);
+    const { id } = request.params;
 
-    //Error Handling
-    if (!res.data.length) {
-      return response.status(404).json({ message: "Snacks does not exist!" });
+    // Fetch data from Supabase
+    const { data, error, status } = await supabase
+      .from('snacks')  // Table name
+      .select('*')    // Select all columns
+      .eq('id', id);  // Filter by ID
+
+    // Error Handling
+    if (error) {
+      return response.status(status).json({ message: error.message });
     }
 
-    // send our snacks object
-    response.json(res.data[0]);
+    if (data.length === 0) {
+      return response.status(404).json({ message: "Snack does not exist!" });
+    }
+
+    // Send the retrieved snack object
+    response.json(data[0]);
   } catch (error) {
     next(error);
   }

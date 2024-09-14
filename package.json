@@ -10,10 +10,11 @@
   "author": "Tiffany Sharpe",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0",
+    "@supabase/supabase-js": "^2.45.4",
     "axios": "^1.7.5",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
     "nodemon": "^3.1.4"
   },
   "devDependencies": {

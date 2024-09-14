@@ -11,7 +11,7 @@ const cors = require("cors");
 const axios = require("axios");
 
 // import our Supabase instance
-const supabase = require('../supabaseInstance');
+const supabase = require('./supabaseInstance');
 // Import Our route functions
 const getAll = require("./routes/getAll");
 const getById = require("./routes/getById");
@@ -19,6 +19,7 @@ const deleteById = require("./routes/deleteById");
 const updateById = require("./routes/updateById");
 const addItem = require("./routes/addItem");
 const docs = require("./routes/docs");
+
 // create an express application
 const app = express();
 

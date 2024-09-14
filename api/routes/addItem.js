@@ -1,5 +1,5 @@
 // import our Supabase instance
-const supabase = require("../../supabaseInstance");
+const supabase = require("../supabaseInstance");
 
 const addItem = async (request, response, next) => {
   try {

@@ -1,5 +1,5 @@
 // Import our Supabase instance
-const { supabase } = require("../../supabaseInstance");
+const { supabase } = require("../supabaseInstance");
 
 const updateById = async (request, response, next) => {
   try {
