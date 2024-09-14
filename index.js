@@ -11,8 +11,7 @@ const cors = require("cors");
 const axios = require("axios");
 
 // import our Supabase instance
-const supabase = require("../supabaseInstance");
-
+const supabase = require('../supabaseInstance');
 // Import Our route functions
 const getAll = require("./routes/getAll");
 const getById = require("./routes/getById");
