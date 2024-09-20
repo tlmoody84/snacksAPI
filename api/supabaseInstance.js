@@ -14,4 +14,5 @@ const axiosInstance = axios.create({
     },
 });
 
+
 module.exports = supabase, axiosInstance;

@@ -10,8 +10,9 @@ const cors = require("cors");
 // Import Axios
 const axios = require("axios");
 
-// import our Supabase instance
+// Import our Supabase instance
 const supabase = require('./supabaseInstance');
+
 // Import Our route functions
 const getAll = require("./routes/getAll");
 const getById = require("./routes/getById");
@@ -20,10 +21,10 @@ const updateById = require("./routes/updateById");
 const addItem = require("./routes/addItem");
 const docs = require("./routes/docs");
 
-// create an express application
+// Create an Express application
 const app = express();
 
-// define a port
+// Define a port
 const PORT = 4000;
 
 // Define our Middleware
@@ -38,7 +39,7 @@ app.use(cors(corsOptions));
 // Use JSON middleware to parse request bodies
 app.use(express.json());
 
-// middleware for api key security
+// Middleware for API key security
 app.use((request, response, next) => {
   const apiKey = request.headers["api-key"];
 
@@ -53,23 +54,23 @@ app.use((request, response, next) => {
 
 // Define our Routes
 // Home Route
-app.get("/", (request, response, next) => {
+app.get("/", (request, response) => {
   response.json(docs);
 });
 
 // Route to Get all Snacks
 app.get("/snacks", getAll);
 
-// Route to get a single snacks by id
+// Route to get a single snack by id
 app.get("/snacks/:id", getById);
 
-// Route to delete a single snacks by id
+// Route to delete a single snack by id
 app.delete("/snacks/:id", deleteById);
 
-// Route to add a snacks
+// Route to add a snack
 app.post("/snacks", addItem);
 
-// Route to update a snacks by id
+// Route to update a snack by id
 app.put("/snacks/:id", updateById);
 
 // Error Handling
@@ -84,18 +85,17 @@ app.use((error, request, response, next) => {
 });
 
 // 404 Resource not found Error Handling
-app.use((request, response, next) => {
+app.use((request, response) => {
   response.status(404).json({
     error:
       "Resource not found. Are you sure you're looking in the right place?",
   });
 });
 
-// make the server listen on our port
+// Make the server listen on our port
 const server = app.listen(PORT, () => {
   console.log(`The server is running on http://localhost:${PORT}`);
 });
 
-
-// export our app for testing
+// Export our app and server for testing
 module.exports = { app, server };
