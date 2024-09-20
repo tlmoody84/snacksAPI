@@ -8,8 +8,6 @@ class SupabaseClient {
       this.key = key;
       this.options = options || {};
     }
-  
-    // Other methods...
   }
   
   module.exports = SupabaseClient;
