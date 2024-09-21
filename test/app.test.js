@@ -9,7 +9,7 @@ describe('API Routes', () => {
     snackId = null;
   });
   afterAll(() => {
-    // Optionally clean up if needed
+   
   });
   it('should return all snacks', async () => {
     const mockSnacks = [
@@ -62,20 +62,6 @@ describe('API Routes', () => {
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject(mockSnack);
   });
-  // it('should update a snack by ID', async () => { if (snackId === null) 
-  //   { throw new Error('No valid snack ID available for testing'); } 
-  //   const updatedSnack = { name: 'Updated Chips', description: 'Crunchier potato chips', price: 2.0, category: 'Salty', inStock: false, }; 
-  //   // Mock the GET request to check if the snack exists axiosInstance.get.mockResolvedValue
-  //   ({ data: [{ id: snackId }] }); 
-  //   // Mock the PATCH request for updating the snack axiosInstance.patch.mockResolvedValue
-  //   ({ data: { id: snackId, ...updatedSnack } }); const response = await request(app) .patch(`/api/snacks/${snackId}`) .set("api-key", process.env.ADMIN_API_KEY) 
-  //   // Ensure this header is included 
-  //   .send(updatedSnack);
-  //    // Send the updated snack data// Assert the response status and body
-  //    expect(response.status).toBe(200); 
-  //    expect(response.body).toMatchObject({ id: snackId, ...updatedSnack }); });
-
-
   it('should update a snack by ID', async () => {
     if (snackId === null) {
         throw new Error('No valid snack ID available for testing');
@@ -87,23 +73,16 @@ describe('API Routes', () => {
         category: 'Salty',
         inStock: false,
     };
-    // Mock the GET request to check if the snack exists
     axiosInstance.get.mockResolvedValue({ data: [{ id: snackId, ...updatedSnack }] });
-    // Mock the PATCH request for updating the snack
     axiosInstance.patch.mockResolvedValue({ data: { id: snackId, ...updatedSnack } });
     const response = await request(app)
         .patch(`/api/snacks/${snackId}`)
         .set("api-key", process.env.ADMIN_API_KEY)
         .send(updatedSnack);
     console.log('Update Snack Response:', response.body); // Debugging output
-    // Assert the response status and body
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({ id: snackId, ...updatedSnack });
 });
-
-
-
-
   it('should delete a snack by ID', async () => {
     if (snackId === null) {
       throw new Error('No valid snack ID available for testing');

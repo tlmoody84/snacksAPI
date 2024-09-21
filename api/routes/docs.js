@@ -76,7 +76,7 @@ const docs = {
           message: "Snack updated successfully.",
         },
       },
-      deleteSnackById: { // Fixed the name here
+      deleteSnackById: { 
         method: "DELETE",
         route: "/snacks/:id",
         description: "Deletes a snack by ID.",

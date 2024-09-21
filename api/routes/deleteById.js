@@ -1,4 +1,3 @@
-// import our Supabase instance
 const supabase = require("../supabaseInstance");
 
 const deleteById = async (request, response, next) => {
