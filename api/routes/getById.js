@@ -1,30 +1,17 @@
-// Import the Supabase client instance
-const { supabase } = require("../supabaseInstance");
-
-const getById = async (request, response, next) => {
-  try {
-    const { id } = request.params;
-
-    // Fetch data from Supabase
-    const { data, error, status } = await supabase
-      .from('snacks')  // Table name
-      .select('*')    // Select all columns
-      .eq('id', id);  // Filter by ID
-
-    // Error Handling
-    if (error) {
-      return response.status(status).json({ message: error.message });
+const axiosInstance = require('../supabaseInstance');
+module.exports = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const response = await axiosInstance.get(`/snacks?id=eq.${id}`);
+        if (response.data.length > 0) {
+            res.json(response.data[0]);
+        } else {
+            res.status(404).json({ error: 'Snack not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching snack by ID:', error.message);
+        res.status(error.response?.status || 500).json({
+            error: error.response?.data?.message || 'An error occurred while fetching the snack.'
+        });
     }
-
-    if (data.length === 0) {
-      return response.status(404).json({ message: "Snack does not exist!" });
-    }
-
-    // Send the retrieved snack object
-    response.json(data[0]);
-  } catch (error) {
-    next(error);
-  }
 };
-
-module.exports = getById;

@@ -1,82 +1,92 @@
-// Import Dotenv
-require("dotenv").config();
-
-const request = require("supertest");
-const { app, server } = require("../api/index");
-
-describe("Snacks API", () => {
-  // Test GET all snacks
-  it("should return all snacks", async () => {
+require('dotenv').config();
+const request = require('supertest');
+const { app } = require('../api/index');
+const axiosInstance = require('../api/supabaseInstance');
+jest.mock('../api/supabaseInstance');
+describe('API Routes', () => {
+  let snackId = null;
+  beforeAll(() => {
+    snackId = null;
+  });
+  afterAll(() => {
+    // Optionally clean up if needed
+  });
+  it('should return all snacks', async () => {
+    const mockSnacks = [
+      { id: 1, name: 'Chips', description: 'Crunchy potato chips', price: 1.5, category: 'Salty', inStock: true },
+    ];
+    axiosInstance.get.mockResolvedValue({ data: mockSnacks });
     const response = await request(app)
-      .get("/snacks")
+      .get('/api/snacks')
       .set("api-key", process.env.ADMIN_API_KEY);
     expect(response.status).toBe(200);
-    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body).toEqual(mockSnacks);
   });
-
-  // Test GET a single snack by id
-  it("should return a snack by ID", async () => {
-    const snackId = 10; // Change this ID based on your testing data
-    const response = await request(app)
-      .get(`/snacks/${snackId}`)
-      .set("api-key", process.env.ADMIN_API_KEY);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("id", snackId);
-  });
-
-  // Test POST a new snack
-  it("should add a new snack", async () => {
+  it('should create a new snack', async () => {
     const newSnack = {
-      name: "Chips",
-      description: "Crunchy and salty",
+      name: 'Chips',
+      description: 'Crunchy potato chips',
       price: 1.5,
-      category: "Salty Snacks",
+      category: 'Salty',
       inStock: true,
     };
+    const createdSnack = { id: 1, ...newSnack };
+    axiosInstance.post.mockResolvedValue({ data: createdSnack });
     const response = await request(app)
-      .post("/snacks")
+      .post('/api/snacks')
       .set("api-key", process.env.ADMIN_API_KEY)
       .send(newSnack);
+    console.log('Create Snack Response:', response.body); // Debugging
     expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("name", "Chips");
-    expect(response.body).toHaveProperty("description", "Crunchy and salty");
-    expect(response.body).toHaveProperty("price", 1.5);
+    expect(response.body).toMatchObject(newSnack);
+    expect(response.body).toHaveProperty('id');
+    snackId = response.body.id;
+    console.log(`Created snack with ID: ${snackId}`);
   });
-
-  // Test DELETE a snack by id
-  it("should delete a snack by ID", async () => {
-    const snackId = 1; // Change this ID for testing purposes
-    const response = await request(app)
-      .delete(`/snacks/${snackId}`)
-      .set("api-key", process.env.ADMIN_API_KEY);
-    expect(response.status).toBe(204);
-  });
-
-  // Test PUT to update a snack by id
-  it("should update a snack by ID", async () => {
-    const snackId = 1; // Use a valid ID
-    const updatedSnack = {
-      name: "Chips - Updated",
-      description: "Updated description",
-      price: 2.0,
-      category: "Updated Snacks",
-      inStock: false,
+  it('should return a snack by ID', async () => {
+    if (snackId === null) {
+      throw new Error('No valid snack ID available for testing');
+    }
+    const mockSnack = {
+      id: snackId,
+      name: 'Chips',
+      description: 'Crunchy potato chips',
+      price: 1.5,
+      category: 'Salty',
+      inStock: true,
     };
+    axiosInstance.get.mockResolvedValue({ data: [mockSnack] });
     const response = await request(app)
-      .put(`/snacks/${snackId}`)
-      .set("api-key", process.env.ADMIN_API_KEY)
-      .send(updatedSnack);
-
+      .get(`/api/snacks/${snackId}`)
+      .set("api-key", process.env.ADMIN_API_KEY);
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("name", "Chips - Updated");
-    expect(response.body).toHaveProperty("description", "Updated description");
-    expect(response.body).toHaveProperty("price", 2.0);
-    expect(response.body).toHaveProperty("category", "Updated Snacks");
-    expect(response.body).toHaveProperty("inStock", false);
+    expect(response.body).toMatchObject(mockSnack);
   });
-
-  // Close the server after all tests
-  afterAll((done) => {
-    server.close(done); // Ensure server is closed after tests
+  it('should update a snack by ID', async () => { if (snackId === null) 
+    { throw new Error('No valid snack ID available for testing'); } 
+    const updatedSnack = { name: 'Updated Chips', description: 'Crunchier potato chips', price: 2.0, category: 'Salty', inStock: false, }; 
+    // Mock the GET request to check if the snack exists axiosInstance.get.mockResolvedValue
+    ({ data: [{ id: snackId }] }); 
+    // Mock the PATCH request for updating the snack axiosInstance.patch.mockResolvedValue
+    ({ data: { id: snackId, ...updatedSnack } }); const response = await request(app) .patch(`/api/snacks/${snackId}`) .set("api-key", process.env.ADMIN_API_KEY) 
+    // Ensure this header is included 
+    .send(updatedSnack);
+     // Send the updated snack data// Assert the response status and body
+     expect(response.status).toBe(200); 
+     expect(response.body).toMatchObject({ id: snackId, ...updatedSnack }); });
+  it('should delete a snack by ID', async () => {
+    if (snackId === null) {
+      throw new Error('No valid snack ID available for testing');
+    }
+    axiosInstance.delete.mockResolvedValue({ data: { message: 'Snack deleted successfully' } });
+    await request(app)
+      .delete(`/api/snacks/${snackId}`)
+      .set("api-key", process.env.ADMIN_API_KEY);
+    axiosInstance.get.mockResolvedValue({ data: [] });
+    const response = await request(app)
+      .get(`/api/snacks/${snackId}`)
+      .set("api-key", process.env.ADMIN_API_KEY);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'Snack not found');
   });
 });

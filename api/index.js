@@ -1,101 +1,67 @@
-// Import Dotenv
 require("dotenv").config();
-
-// Import Express
 const express = require("express");
-
-// Import CORS
 const cors = require("cors");
-
-// Import Axios
-const axios = require("axios");
-
-// Import our Supabase instance
-const supabase = require('./supabaseInstance');
-
-// Import Our route functions
+const axiosInstance = require('./supabaseInstance');
 const getAll = require("./routes/getAll");
 const getById = require("./routes/getById");
 const deleteById = require("./routes/deleteById");
 const updateById = require("./routes/updateById");
 const addItem = require("./routes/addItem");
-const docs = require("./routes/docs");
-
-// Create an Express application
 const app = express();
-
-// Define a port
-const PORT = 4000;
-
-// Define our Middleware
-// Use CORS Middleware
-const corsOptions = {
-  origin: "https://example.com",
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
-app.use(cors(corsOptions));
-
-// Use JSON middleware to parse request bodies
+const PORT = process.env.PORT || 4000;
+app.use(cors());
 app.use(express.json());
-
 // Middleware for API key security
-app.use((request, response, next) => {
-  const apiKey = request.headers["api-key"];
-
+app.use((req, res, next) => {
+  // Skip API key check for the root route and any other public routes
+  if (req.path === '/' || req.path.startsWith('/api/')) {
+    return next();
+  }
+  const apiKey = req.headers["api-key"];
   if (apiKey !== process.env.ADMIN_API_KEY) {
-    return response.status(403).json({
-      message:
-        "ACCESS DENIED! You need an API key for that. See our administrators",
+    return res.status(403).json({
+      message: "ACCESS DENIED! You need an API key for that. See our administrators.",
     });
   }
   next();
 });
-
-// Define our Routes
-// Home Route
-app.get("/", (request, response) => {
-  response.json(docs);
+// Root route to return the list of snacks
+app.get('/', async (req, res) => {
+  try {
+    const response = await axiosInstance.get('/snacks'); // Adjust according to your actual endpoint
+    res.json(response.data); // Return the list of snacks as JSON
+  } catch (error) {
+    console.error('Error fetching snacks:', error.message);
+    res.status(500).json({
+      error: 'Failed to fetch snacks.',
+      message: error.message
+    });
+  }
 });
-
-// Route to Get all Snacks
-app.get("/snacks", getAll);
-
-// Route to get a single snack by id
-app.get("/snacks/:id", getById);
-
-// Route to delete a single snack by id
-app.delete("/snacks/:id", deleteById);
-
-// Route to add a snack
-app.post("/snacks", addItem);
-
-// Route to update a snack by id
-app.put("/snacks/:id", updateById);
-
-// Error Handling
-// Generic Error Handling
-app.use((error, request, response, next) => {
+// Define API routes
+app.get("/api/snacks", getAll);
+app.get("/api/snacks/:id", getById);
+app.delete("/api/snacks/:id", deleteById);
+app.post("/api/snacks", addItem);
+app.put("/api/snacks/:id", updateById);
+// Error handling middleware
+app.use((error, req, res, next) => {
   console.error(error.stack);
-  response.status(500).json({
+  res.status(500).json({
     error: "Something broke!",
     errorStack: error.stack,
     errorMessage: error.message,
   });
 });
-
-// 404 Resource not found Error Handling
-app.use((request, response) => {
-  response.status(404).json({
-    error:
-      "Resource not found. Are you sure you're looking in the right place?",
+// 404 Error handling for undefined routes
+app.use((req, res) => {
+  res.status(404).json({
+    error: "Resource not found. Are you sure you're looking in the right place?",
   });
 });
-
-// Make the server listen on our port
+// Start the server
 const server = app.listen(PORT, () => {
   console.log(`The server is running on http://localhost:${PORT}`);
 });
-
-// Export our app and server for testing
+// Export the app and server for testing
 module.exports = { app, server };

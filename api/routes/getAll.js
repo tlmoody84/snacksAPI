@@ -1,18 +1,11 @@
-// routes/getAll.js
-const supabase = require('../supabaseInstance');
-
-const getAll = async (req, res, next) => {
+const axiosInstance = require('../supabaseInstance');
+const getAll = async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('snacks')
-      .select('*');
-
-    if (error) throw error;
-
-    res.json(data);
+    const response = await axiosInstance.get('/snacks'); // Make sure 'snacks' is the correct table name
+    res.json(response.data);
   } catch (error) {
-    next(error);
+    console.error('Error fetching snacks:', error);
+    res.status(500).json({ error: error.response?.data || error.message });
   }
 };
-
 module.exports = getAll;

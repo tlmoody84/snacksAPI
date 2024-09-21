@@ -1,35 +1,23 @@
-// import our Supabase instance
-const supabase = require("../supabaseInstance");
-
-const addItem = async (request, response, next) => {
-  try {
-    // destructure our request.body object so we can store the fields in variables
-    const { name, description, price, category, inStock } = request.body;
-
-    // error handling if request doesn't send all fields necessary
-    if (!name || !description || !price || !category || !inStock) {
-      return response
-        .status(400)
-        .json({ message: "Missing required fields!!" });
+const axiosInstance = require('../supabaseInstance');
+module.exports = async (req, res) => {
+    const { name, description, price, category, inStock } = req.body;
+    if (!name || !description || price == null || category == null || inStock == null) {
+        return res.status(400).json({ error: 'Missing required fields' });
     }
-
-    // create a new object with a new ID
-    const newSnacks = {
-      // id: snacks.length + 1,
-      name,
-      description,
-      price,
-      category,
-      inStock,
-    };
-
-    // send our object to our SQL db
-    const res = await supabase.post("/snacks", newSnacks);
-
-    response.status(201).json(newSnacks);
-  } catch (error) {
-    next(error);
-  }
+    try {
+        const response = await axiosInstance.post('/snacks', {
+            name,
+            description,
+            price,
+            category,
+            inStock
+        });
+        console.log('Supabase Response:', response.data);
+        res.status(201).json(response.data);
+    } catch (error) {
+        console.error('Error adding snack:', error.message);
+        res.status(error.response?.status || 500).json({
+            error: error.response?.data?.message || 'An error occurred while adding the snack.'
+        });
+    }
 };
-
-module.exports = addItem;
