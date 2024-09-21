@@ -25,7 +25,7 @@ const docs = require("./routes/docs");
 const app = express();
 
 // Define a port
-const PORT = 3000;
+const PORT = 4000;
 
 // Define our Middleware
 // Use CORS Middleware
